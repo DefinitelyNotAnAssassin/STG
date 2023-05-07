@@ -1,0 +1,265 @@
+#include <iostream>
+#include "sqlite/sqlite3.h"
+#include <string>
+#include <windows.h>
+
+using namespace std;
+
+sqlite3_stmt* stmt;
+sqlite3* db;
+int rc;
+char zErrMsg;
+
+
+// string sql = "SELECT * FROM users";
+// sqlite3_prepare_v2(..., ..., ... ,, );
+// int rc = sqlite3_step(stmt);
+
+
+void dominitest();
+void create_question();
+void select_question();
+void create_user();
+bool login();
+
+int main(){
+    sqlite3_open("quiz.db", &db);
+
+    
+    dominitest();
+    create_user();
+    login();
+    //create_question();
+    select_question();
+
+}
+
+void gotoxy(int x, int y)
+{
+    HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD coord;
+    coord.X = x;
+    coord.Y = y;
+    SetConsoleCursorPosition(hStdOut, coord);
+}
+
+
+void dominitest()
+{
+		for (int x=0; x<=25; x++)
+		{
+			//system("Color B4");
+			gotoxy(x,0);
+			cout << " ||||      ||||    |||   |||  ||||||||  |||   ||  ||||||||  ||||||||  ||||||||    ||||||||   |||||||| ";
+			gotoxy(x,1);
+			cout << " ||  ||   ||  ||   |||| ||||     ||     ||||  ||     ||        ||     ||          ||            ||    ";
+			gotoxy(x,2);
+			cout << " ||  ||  ||    ||  || ||| ||     ||     || || ||     ||        ||     ||||||      ||||||||      ||    ";
+			gotoxy(x,3);
+			cout << " || ||    ||  ||   ||     ||     ||     ||  ||||     ||        ||     ||                ||      ||    ";
+			gotoxy(x,4);
+			cout << " ||||      ||||    ||     ||  ||||||||  ||   |||  ||||||||     ||     ||||||||    ||||||||      ||    ";
+			Sleep(75);
+		}
+	
+		for (int x = 25; x>=0; x--)
+		{
+			//system("Color B4");
+			gotoxy(x,0);
+			cout << " ||||      ||||    |||   |||  ||||||||  |||   ||  ||||||||  ||||||||  ||||||||    ||||||||   |||||||| ";
+			gotoxy(x,1);
+			cout << " ||  ||   ||  ||   |||| ||||     ||     ||||  ||     ||        ||     ||          ||            ||    ";
+			gotoxy(x,2);
+			cout << " ||  ||  ||    ||  || ||| ||     ||     || || ||     ||        ||     ||||||      ||||||||      ||    ";
+			gotoxy(x,3);
+			cout << " || ||    ||  ||   ||     ||     ||     ||  ||||     ||        ||     ||                ||      ||    ";
+			gotoxy(x,4);
+			cout << " ||||      ||||    ||     ||  ||||||||  ||   |||  ||||||||     ||     ||||||||    ||||||||      ||    ";
+			Sleep(75);
+		}	
+}
+
+
+void create_user()
+{
+    string sql = "INSERT INTO users (first_name, last_name, student_number, password) VALUES ( ?, ?, ?, ?) ";
+    string Fname, Lname, pass;
+    int SN;
+
+    system("cls");
+    cout << "\n\t\t\t\t| | | | | | | | | | | | | | | | | | | | | | | | | | | | | " << endl;
+    cout << "\n\t\t\t\t                    STUDENT INFORMATION: ";
+    cout << "\n\n\t\t\t        FIRST NAME: ";
+    getline(cin, Fname);
+    cout << "\n\t\t\t        LAST NAME: ";
+    getline(cin, Lname);
+    cout << "\n\t\t\t        STUDENT NUMBER : ";
+    cin >> SN;
+    cout << "\n\t\t\t        PASSWORD: ";
+    cin >> pass;
+    cout << "\n\t\t\t\t| | | | | | | | | | | | | | | | | | | | | | | | | | | | | " << endl;
+
+    // prepare, bind, step, finalize
+
+    sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
+
+    sqlite3_bind_text(stmt, 1, Fname.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, Lname.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 3, SN);
+    sqlite3_bind_text(stmt, 4, pass.c_str(), -1, SQLITE_STATIC);
+   
+    sqlite3_step(stmt);
+/*
+    if (rc != SQLITE_OK){
+        cout << "Insert Error : " << zErrMsg << endl;
+    }
+    else{
+        cout << "Insert Successfully" << endl;
+    }
+*/
+    sqlite3_finalize(stmt);
+
+    
+}
+
+bool login() 
+{
+    string sql = "SELECT * FROM users WHERE student_number = ? AND password = ?";
+    string pass;
+    int SN;
+    
+    cout << "STUDENT NUMBER: ";
+    cin >> SN;
+
+    cout << "PASSWORD: ";
+    cin >> pass;
+
+    int rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
+
+    sqlite3_bind_int(stmt, 1, SN);
+    sqlite3_bind_text(stmt, 2, pass.c_str(), -1, SQLITE_STATIC);
+
+    rc = sqlite3_step(stmt);
+    if (rc == SQLITE_ROW) 
+    {
+        cout << "Login successful!" << endl;
+        return true;
+    } else 
+    {
+        cout << "\n\nIncorrect Student Number/Password"<< endl;
+        return false;
+    }
+    //sqlite3_finalize(stmt);
+}
+
+void create_question()
+{
+    system("cls");
+    string sql = "INSERT INTO questions (question, choice1, choice2, choice3, choice4, answer, category) VALUES (?, ?, ?, ?, ?, ?, ?) ";
+    string q, c1, c2, c3, c4, cat;
+    int ans;
+
+    cout << "Question : ";
+    getline(cin, q);
+
+    cout << "Choice 1 : ";
+    getline(cin, c1);
+
+    cout << "Choice 2 : ";
+    getline(cin, c2);
+
+    cout << "Choice 3 : ";
+    getline(cin, c3);
+
+    cout << "Choice 4 : ";
+    getline(cin, c4);
+
+    cout << "Answer : ";
+    cin >> ans;
+
+    cout << "Category : ";
+    cin >> cat;
+
+
+    // prepare, bind, step, finalize
+
+
+    sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
+
+    sqlite3_bind_text(stmt, 1, q.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, c1.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 3, c2.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 4, c3.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 5, c4.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 6, ans);
+    sqlite3_bind_text(stmt, 7, cat.c_str(), -1, SQLITE_STATIC);
+   
+    sqlite3_step(stmt);
+
+    if (rc != SQLITE_OK){
+        cout << "Insert Error : " << zErrMsg << endl;
+    }
+    else{
+        cout << "Insert Successfully" << endl;
+    }
+
+    sqlite3_finalize(stmt);
+}
+
+
+void select_question()
+{
+    string sql = "SELECT * FROM questions WHERE category = ? ORDER BY RANDOM() LIMIT 10";
+    int choice;
+    string category;
+    cout << "\n\n1. English\n2. Filipino\n3. Math\n4. Science\n\nEnter Category: ";
+    cin >> choice;
+
+    switch(choice)
+    {
+        case 1:
+            category = "English";   
+            break;
+        case 2:
+            category = "Filipino";
+            break;
+        case 3:
+            category = "Math";
+            break;
+        case 4:
+            category = "Science";
+            break;
+
+        default:
+            cout << "Invalid Input";
+
+    }
+
+    // prepare, bind, step, finalize
+
+    sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
+
+    sqlite3_bind_text(stmt, 1, category.c_str(),-1, SQLITE_STATIC);
+
+    sqlite3_step(stmt);
+
+    if (rc != SQLITE_OK)
+    {
+        cout << "Select Error : " << zErrMsg << endl;
+    }
+    else
+    {
+        cout << "Selected Successfully" << endl;
+
+        while (sqlite3_step(stmt) == SQLITE_ROW){
+            cout << "Question : " << sqlite3_column_text(stmt, 0) << endl;
+            cout << "Choice 1 : " << sqlite3_column_text(stmt, 1) << endl;
+            cout << "Choice 2 : " << sqlite3_column_text(stmt, 2) << endl;
+            cout << "Choice 3 : " << sqlite3_column_text(stmt, 3) << endl;
+            cout << "Choice 4 : " << sqlite3_column_text(stmt, 4) << endl;
+        }
+    }
+
+    sqlite3_finalize(stmt);
+}
+
