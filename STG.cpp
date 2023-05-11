@@ -278,20 +278,9 @@ void create_question()
 
 void select_question()
 {
-    if (math_score != 0){
-        math_score = 0; // resets the score if a score is already existing
-
-    }
-    else if (science_score != 0){
-        science_score = 0;
-    }
-     else if (english_score != 0){
-        english_score = 0;
-    }
-
-     else if (filipino_score != 0){
-        filipino_score = 0;
-     }
+    
+    
+     
 
     string sql = "SELECT * FROM questions WHERE category = ? ORDER BY RANDOM()";
   
@@ -314,15 +303,28 @@ void select_question()
     {
         case 1:
             category = "English";   
+            if (english_score != 0){
+                english_score = 0;
+            }
+            
             break;
         case 2:
             category = "Filipino";
+            if (filipino_score != 0){
+                filipino_score = 0;
+            }
             break;
         case 3:
             category = "Math";
+            if (math_score != 0){
+            math_score = 0; // resets the score if a score is already existing
+             }
             break;
         case 4:
             category = "Science";
+            if (science_score != 0){
+                science_score = 0;
+            }
             break;
 
         default:
@@ -426,11 +428,11 @@ void transmuted_grade(){
 	t70=((english_score/ITEMS)*50)+40;
 	t80=((english_score/ITEMS)*50)+35;
 	
-    cout <<"English Scores : " << endl << endl;
-    cout << "Raw Score : " << english_score << endl;
-    cout << "80% Passing : " << t80 << endl;
-    cout << "70% Passing : " << t70 << endl;
-    cout << "50% Passing " << t50 << endl << endl;
+    cout <<"\n\t\t\t\t\t        English Scores  " << endl << endl;
+    cout << "\n\t\t\t\t\t        Raw Score : " << english_score << endl;
+    cout << "\n\t\t\t\t\t        80% Passing : " << t80 << endl;
+    cout << "\n\t\t\t\t\t        70% Passing : " << t70 << endl;
+    cout << "\n\t\t\t\t\t        50% Passing : " << t50 << endl << endl;
     } 
     // ^^ if english_score is true or if its already 'answered' then show the scores
     
@@ -441,11 +443,11 @@ void transmuted_grade(){
 	t70=((filipino_score/ITEMS)*50)+40;
 	t80=((filipino_score/ITEMS)*50)+35;
 	
-    cout <<"Filipino Scores : " << endl << endl;
-    cout << "Raw Score : " << filipino_score << endl;
-    cout << "80% Passing : " << t80 << endl;
-    cout << "70% Passing : " << t70 << endl;
-    cout << "50% Passing " << t50 << endl << endl;
+    cout <<"\n\t\t\t\t\t        Filipino Scores  " << endl << endl;
+    cout << "\n\t\t\t\t\t        Raw Score : " << filipino_score << endl;
+    cout << "\n\t\t\t\t\t        80% Passing : " << t80 << endl;
+    cout << "\n\t\t\t\t\t        70% Passing : " << t70 << endl;
+    cout << "\n\t\t\t\t\t        50% Passing : " << t50 << endl << endl;
     }
 
     // you can notice that I used if - if  not a if - else if, that is a crucial logical choice,
@@ -460,11 +462,11 @@ void transmuted_grade(){
 	t70=((math_score/ITEMS)*50)+40;
 	t80=((math_score/ITEMS)*50)+35;
 	
-    cout <<"Math Scores : " << endl << endl;
-    cout << "Raw Score : " << math_score << endl;
-    cout << "80% Passing : " << t80 << endl;
-    cout << "70% Passing : " << t70 << endl;
-    cout << "50% Passing " << t50 << endl << endl;
+    cout <<"\n\t\t\t\t\t        Math Scores  " << endl << endl;
+    cout << "\n\t\t\t\t\t        Raw Score : " << math_score << endl;
+    cout << "\n\t\t\t\t\t        80% Passing : " << t80 << endl;
+    cout << "\n\t\t\t\t\t        70% Passing : " << t70 << endl;
+    cout << "\n\t\t\t\t\t        50% Passing : " << t50 << endl << endl;
 
 
     }
@@ -475,11 +477,11 @@ void transmuted_grade(){
 	t70=((science_score/ITEMS)*50)+40;
 	t80=((science_score/ITEMS)*50)+35;
 	
-    cout <<"Science Scores : " << endl << endl;
-    cout << "Raw Score : " << science_score << endl;
-    cout << "80% Passing : " << t80 << endl;
-    cout << "70% Passing : " << t70 << endl;
-    cout << "50% Passing " << t50 << endl << endl;
+    cout <<"\n\t\t\t\t\t        Science Scores  " << endl << endl;
+    cout << "\n\t\t\t\t\t        Raw Score : " << science_score << endl;
+    cout << "\n\t\t\t\t\t        80% Passing : " << t80 << endl;
+    cout << "\n\t\t\t\t\t        70% Passing : " << t70 << endl;
+    cout << "\n\t\t\t\t\t        50% Passing : " << t50 << endl << endl;
 
 
     }
