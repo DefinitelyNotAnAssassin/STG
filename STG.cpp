@@ -428,7 +428,7 @@ void transmuted_grade(){
 	t70=((english_score/ITEMS)*50)+40;
 	t80=((english_score/ITEMS)*50)+35;
 	
-    cout <<"\n\t\t\t\t\t        English Scores  " << endl << endl;
+    cout <<"\n\t\t\t\t\t        ENGLISH SCORES  " << endl << endl;
     cout << "\n\t\t\t\t\t        Raw Score : " << english_score << endl;
     cout << "\n\t\t\t\t\t        80% Passing : " << t80 << endl;
     cout << "\n\t\t\t\t\t        70% Passing : " << t70 << endl;
@@ -443,7 +443,7 @@ void transmuted_grade(){
 	t70=((filipino_score/ITEMS)*50)+40;
 	t80=((filipino_score/ITEMS)*50)+35;
 	
-    cout <<"\n\t\t\t\t\t        Filipino Scores  " << endl << endl;
+    cout <<"\n\t\t\t\t\t        FILIPINO SCORES   " << endl << endl;
     cout << "\n\t\t\t\t\t        Raw Score : " << filipino_score << endl;
     cout << "\n\t\t\t\t\t        80% Passing : " << t80 << endl;
     cout << "\n\t\t\t\t\t        70% Passing : " << t70 << endl;
@@ -462,7 +462,7 @@ void transmuted_grade(){
 	t70=((math_score/ITEMS)*50)+40;
 	t80=((math_score/ITEMS)*50)+35;
 	
-    cout <<"\n\t\t\t\t\t        Math Scores  " << endl << endl;
+    cout <<"\n\t\t\t\t\t        MATH SCORES  " << endl << endl;
     cout << "\n\t\t\t\t\t        Raw Score : " << math_score << endl;
     cout << "\n\t\t\t\t\t        80% Passing : " << t80 << endl;
     cout << "\n\t\t\t\t\t        70% Passing : " << t70 << endl;
@@ -477,7 +477,7 @@ void transmuted_grade(){
 	t70=((science_score/ITEMS)*50)+40;
 	t80=((science_score/ITEMS)*50)+35;
 	
-    cout <<"\n\t\t\t\t\t        Science Scores  " << endl << endl;
+    cout <<"\n\t\t\t\t\t        SCIENCE SCORES  " << endl << endl;
     cout << "\n\t\t\t\t\t        Raw Score : " << science_score << endl;
     cout << "\n\t\t\t\t\t        80% Passing : " << t80 << endl;
     cout << "\n\t\t\t\t\t        70% Passing : " << t70 << endl;
