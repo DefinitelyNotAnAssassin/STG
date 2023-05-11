@@ -3,19 +3,11 @@
 #include <string>
 #include <windows.h>
 
+#define ITEMS 10
+
 
 
 using namespace std;
-
-struct User{
-    int student_number;
-    string firstname;
-    string lastname;
-    
-};
-
-
-User current_user;
 
 
 
@@ -25,18 +17,30 @@ int rc;
 char zErrMsg;
 int attempt = 1;
 
+int math_score, english_score, filipino_score, science_score = 0;
+bool is_english, is_filipino, is_math, is_science = false; // boolean values that will determine if the category has been answered already.
 
+
+int count = 0;
+
+
+/// CATEGORY CODES : 
+
+
+/*
+Original English - 2023123 
+Original Filipino - 2023124
+Original Math - 2023125
+Original Science - 2023126
+
+*/ 
 
 
 void exit_message(){
     cout << "Thank you for using Dominitest"  << endl;
 }
 
-
-int english_score = 0;
-int filipino_score = 0;
-int math_score = 0;
-int science_score = 0;
+int quiz_score();
 
 
 // string sql = "SELECT * FROM users";
@@ -49,16 +53,17 @@ bool login();
 void select_question();
 void create_question();
 
-void save_grade();
+void save_grade(string quiz_id);
 void read_grade();
+
+void transmuted_grade();
 
 int main()
 {
      
 
     sqlite3_open("quiz.db", &db);
-   
-    dominitest();
+       dominitest();
     
     int opt;
     cout << "\n\n\n1. Login\n2. Sign-in \nChoose from above: ";
@@ -88,7 +93,7 @@ int main()
 
 
     return 0;
-    
+  
 }
 
 void gotoxy(int x, int y)
@@ -192,10 +197,8 @@ bool login()
     if (rc == SQLITE_ROW) 
     {
         cout << "Login successful!" << endl;
-        current_user.firstname = (char*) sqlite3_column_text(stmt, 0);
-        current_user.lastname = (char*) sqlite3_column_text(stmt, 1);
-        current_user.student_number = sqlite3_column_int(stmt, 2);
-        select_question();
+        
+        
         return true;
     } else if (rc != SQLITE_ROW && attempt <=3)
     {
@@ -218,7 +221,11 @@ void create_question()
     string sql = "INSERT INTO questions (question, choice1, choice2, choice3, choice4, ans, category) VALUES (?, ?, ?, ?, ?, ?, ?) ";
     string q, c1, c2, c3, c4, cat;
     int ans;
+    cat = "English"; // Change the category when running/executing the program.
 
+    
+
+    while(1){
     cout << "Question : ";
     getline(cin, q);
 
@@ -237,7 +244,7 @@ void create_question()
     cout << "Answer : ";
     cin >> ans;
  
-    cat = "Science";
+    
     // prepare, bind, step, finalize
     sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
 
@@ -259,11 +266,35 @@ void create_question()
     }
 
     sqlite3_finalize(stmt);
+
+
+
+
+
+    }
+
+    
 }
 
 void select_question()
 {
+    if (math_score != 0){
+        math_score = 0; // resets the score if a score is already existing
+
+    }
+    else if (science_score != 0){
+        science_score = 0;
+    }
+     else if (english_score != 0){
+        english_score = 0;
+    }
+
+     else if (filipino_score != 0){
+        filipino_score = 0;
+     }
+
     string sql = "SELECT * FROM questions WHERE category = ? ORDER BY RANDOM()";
+  
     int choice;
     string category;
     system("cls");
@@ -272,10 +303,12 @@ void select_question()
 
     cout << "\n\n\n\t\t\t\t| | | | | | | | | | | | | | | | | | | | | | | | | | | | | " << endl;
     cout << "\n\t\t\t\t\t                 CATEGORIES";
-    cout << "\n\n\t\t\t\t1. English\n\t\t\t\t2. Filipino\n\t\t\t\t3. Math\n\t\t\t\t4. Science";  
+    cout << "\n\n\t\t\t\t        1. English\n\t\t\t\t        2. Filipino\n\t\t\t\t        3. Math\n\t\t\t\t        4. Science"; 
     cout << "\n\n\n\t\t\t\t| | | | | | | | | | | | | | | | | | | | | | | | | | | | | " << endl;
-    cout <<"\n\n\t\t\t\tEnter Category:";
+    cout <<"\n\n\t\t\t\tEnter Action: ";
     cin >> choice;
+
+
 
     switch(choice)
     {
@@ -294,128 +327,82 @@ void select_question()
 
         default:
             cout << "Invalid Input";
-    }
-    if(category == "English")
-    {
-        if(english_score != 0)
-        {
-            english_score = 0;
-        }
-    }
-    if(category == "Filipino")
-    {
-        if(filipino_score != 0)
-        {
-            filipino_score = 0;
-        }
-    }
-    if(category == "Math")
-    {
-        if(math_score != 0)
-        {
-            math_score = 0;
-        }
-    }
-    if(category == "Science")
-    {
-        if(science_score != 0)
-        {
-            science_score = 0;
-        }
+
     }
     system("cls");
 
     // prepare, bind, step, finalize
 
     sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
-
+    
     sqlite3_bind_text(stmt, 1, category.c_str(),-1, SQLITE_STATIC);
 
     sqlite3_step(stmt);
 
-    if (rc != SQLITE_OK)
+    if (rc != SQLITE_OK && rc != SQLITE_ROW)
     {
-        cout << "Select Error : " << zErrMsg << endl;
+        cout << "Select Error : " << sqlite3_errmsg(db) << endl;
     }
     else
     {
         cout << "" << endl;
-
+        string category;
         while (sqlite3_step(stmt) == SQLITE_ROW){
             cout << "\n\n\t\t\t\t\t      Question : " << sqlite3_column_text(stmt, 0) << endl;
             cout << "\n\t\t\t\t\t        Choice 1 : " << sqlite3_column_text(stmt, 1) << endl;
             cout << "\n\t\t\t\t\t        Choice 2 : " << sqlite3_column_text(stmt, 2) << endl;
             cout << "\n\t\t\t\t\t        Choice 3 : " << sqlite3_column_text(stmt, 3) << endl;
             cout << "\n\t\t\t\t\t        Choice 4 : " << sqlite3_column_text(stmt, 4) << endl;
-            cout << "\n\t\t\t\t\t        Category : " << sqlite3_column_text(stmt, 6) << endl;
-           
+            category = (char*) sqlite3_column_text(stmt, 6);
             int ans;
             
-            string category = (const char*)sqlite3_column_text(stmt, 6);
             
             int real_ans = sqlite3_column_int(stmt, 5);
             cout << "\n\t\t\t\t\t        Answer : ";
             cin >> ans;
 
-            if (ans == real_ans){
+            // put some score function here
 
-                if(category== "English")
-                {
+            if (real_ans == ans){
+                if (category == "English"){
                     english_score++;
+                    is_english = true; //sets is_english to mark as answered
                 }
-                else if (category== "Filipino")
-                {
+                else if (category == "Filipino"){
                     filipino_score++;
+                    is_filipino == true;
                 }
-                else if (category== "Math")
-                {
+                else if (category == "Math"){
                     math_score++;
+                    is_math = true;
                 }
-                else if(category == "Science")
-                {
+                else if (category == "Science"){
                     science_score++;
+                    is_science = true;
                 }
-                else{
-                    cout << "501 - Problem Occurred" << endl;
-                }
-                
-                cout << "" << endl;
-            }
-            else{
-                cout << "" << endl;
-            }
 
-
+            }
+           
             system("cls");
         }
     }
     sqlite3_finalize(stmt);
-
-    cout << "\n\t\t\t\t\t        English score : " << english_score << "/10" << endl;
-    cout << "\n\t\t\t\t\t        Filipino score : " << filipino_score << "/10" << endl;
-    cout << "\n\t\t\t\t\t        Math score : " << math_score << "/10" << endl;
-    cout << "\n\t\t\t\t\t        Science score : " << science_score << "/10" << endl;
-
+   transmuted_grade();
 
     int opt;
 
-    cout << "\n\t\t\t\t\t        1. Try Again\n\t\t\t\t\t        2. Save Grades\n\t\t\t\t\t        3. Exit Program\n\t\t\t\t\t        Select Action: ";
+    cout << "\n\t\t\t\t\t        1. Try Again\n\t\t\t\t\t        2. Exit\n\t\t\t\t\t       Select Action: ";
     cin >> opt;
     switch(opt){
         case 1:
             select_question();
+            
             break;
         case 2:
-            save_grade();
-            filipino_score, english_score, math_score, science_score = 0;
-            break;
-
-        case 3:
             exit_message();
             exit(0);
             break;
-
-
+     
         default:
             cout << "\n\t\t\t\t\t        Invalid Input. Try again \n";
             
@@ -426,31 +413,78 @@ void select_question()
 }
 
 
-void save_grade(){
-  
-    string sql = "INSERT INTO grades (user_id, filipino_grade, english_grade, math_grade, science_grade, date) VALUES (?, ?, ?, ?< ?, ?)";
-    sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
 
-    auto date = time(nullptr);
+void transmuted_grade(){
+    int t50, t70, t80;
+
+    
+    // Now the boolean values of is_category will play the magic here determining what grades to show 
 
 
-    sqlite3_bind_int(stmt, 1, current_user.student_number);
-    sqlite3_bind_int(stmt, 2, filipino_score);
-    sqlite3_bind_int(stmt, 3, english_score);
-    sqlite3_bind_int(stmt, 4, math_score);
-    sqlite3_bind_int(stmt, 5, science_score);
-    sqlite3_bind_int64(stmt, 6, date);
-
-    rc = sqlite3_step(stmt);
-
-    if (rc != SQLITE_DONE && rc != SQLITE_OK){
-        cout << "Error : " << sqlite3_errmsg(db);
+    if(english_score){
+    t50=((english_score/ITEMS)*50)+50;
+	t70=((english_score/ITEMS)*50)+40;
+	t80=((english_score/ITEMS)*50)+35;
+	
+    cout <<"English Scores : " << endl << endl;
+    cout << "Raw Score : " << english_score << endl;
+    cout << "80% Passing : " << t80 << endl;
+    cout << "70% Passing : " << t70 << endl;
+    cout << "50% Passing " << t50 << endl << endl;
+    } 
+    // ^^ if english_score is true or if its already 'answered' then show the scores
+    
+    
+    if (filipino_score){
+         
+    t50=((filipino_score/ITEMS)*50)+50;
+	t70=((filipino_score/ITEMS)*50)+40;
+	t80=((filipino_score/ITEMS)*50)+35;
+	
+    cout <<"Filipino Scores : " << endl << endl;
+    cout << "Raw Score : " << filipino_score << endl;
+    cout << "80% Passing : " << t80 << endl;
+    cout << "70% Passing : " << t70 << endl;
+    cout << "50% Passing " << t50 << endl << endl;
     }
-    else{
-        cout << "Grade Inserted" << endl;
+
+    // you can notice that I used if - if  not a if - else if, that is a crucial logical choice,
+    // if - else if = If the first condition is met, then the rest is ignored
+    // if - if = If the first condition is met, then the next condition will also be checked.
+
+
+
+    if (math_score){
+
+    t50=((math_score/ITEMS)*50)+50;
+	t70=((math_score/ITEMS)*50)+40;
+	t80=((math_score/ITEMS)*50)+35;
+	
+    cout <<"Math Scores : " << endl << endl;
+    cout << "Raw Score : " << math_score << endl;
+    cout << "80% Passing : " << t80 << endl;
+    cout << "70% Passing : " << t70 << endl;
+    cout << "50% Passing " << t50 << endl << endl;
+
+
     }
 
+    if (science_score){
 
+    t50=((science_score/ITEMS)*50)+50;
+	t70=((science_score/ITEMS)*50)+40;
+	t80=((science_score/ITEMS)*50)+35;
+	
+    cout <<"Science Scores : " << endl << endl;
+    cout << "Raw Score : " << science_score << endl;
+    cout << "80% Passing : " << t80 << endl;
+    cout << "70% Passing : " << t70 << endl;
+    cout << "50% Passing " << t50 << endl << endl;
+
+
+    }
+    
+
+   
 }
-
 
